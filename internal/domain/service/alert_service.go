@@ -22,22 +22,22 @@ func NewAlertService(cryptoRepository ports.CryptoRepository, alertRepository po
 	}
 }
 
-func (s *AlertService) AlertByCurrency() {
-	currencies, err := s.alertRepository.FindCurrencies()
+func (s *AlertService) AlertByCoinName() {
+	coinNames, err := s.alertRepository.FindCoinNames()
 	if err != nil {
-		log.Println("Something went wrong trying to find currencies", err)
+		log.Println("Something went wrong trying to find coinNames", err)
 		return
 	}
-	for _, currency := range currencies {
-		price, err := s.cryptoRepository.GetPrice(currency, "usd")
+	for _, coinName := range coinNames {
+		price, err := s.cryptoRepository.GetPrice(coinName, "usd")
 		if err != nil {
 			log.Printf("Something went wrong trying to find the price of %f\n", price.MarketPrice)
 			return
 		}
 
-		alerts, err := s.alertRepository.FindByCurrency(currency)
+		alerts, err := s.alertRepository.FindByCoinName(coinName)
 		if err != nil {
-			log.Println("Something went wrong trying to find alerts by currencies", err)
+			log.Println("Something went wrong trying to find alerts by coinNames", err)
 			return
 		}
 
@@ -46,7 +46,7 @@ func (s *AlertService) AlertByCurrency() {
 				s.botClient.Send(telegram.NewMessage(
 					alert.ChatId,
 					fmt.Sprintf("%s has a price of %s and it is higher than %s",
-						alert.Currency,
+						alert.CoinName,
 						strconv.FormatFloat(float64(price.MarketPrice), 'f', -1, 32),
 						alert.FormattedPrice())),
 				)
@@ -55,7 +55,7 @@ func (s *AlertService) AlertByCurrency() {
 				s.botClient.Send(telegram.NewMessage(
 					alert.ChatId,
 					fmt.Sprintf("%s has a price of %s and it is lower than %s",
-						alert.Currency,
+						alert.CoinName,
 						strconv.FormatFloat(float64(price.MarketPrice), 'f', -1, 32),
 						alert.FormattedPrice())),
 				)

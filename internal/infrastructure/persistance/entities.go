@@ -7,7 +7,7 @@ import (
 type AlertDAO struct {
 	ChatId        int64  `gorm:"primaryKey;autoIncrement:false"`
 	UserId        int64  `gorm:"primaryKey;autoIncrement:false"`
-	Currency      string `gorm:"primaryKey"`
+	CoinName      string `gorm:"primaryKey"`
 	IsGreaterThan bool   `gorm:"primaryKey"`
 	Price         float64
 	CreatedAt     time.Time

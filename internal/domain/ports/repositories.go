@@ -14,6 +14,6 @@ type AlertRepository interface {
 	FindByChatIDAndUserID(chatID int64, userID int64) ([]model.Alert, error)
 	Create(alert model.Alert) error
 	Delete(alert model.Alert) (bool, error)
-	FindCurrencies() ([]string, error)
-	FindByCurrency(currency string) ([]model.Alert, error)
+	FindCoinNames() ([]string, error)
+	FindByCoinName(coinName string) ([]model.Alert, error)
 }

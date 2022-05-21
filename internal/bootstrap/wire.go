@@ -46,8 +46,8 @@ func NewApp() *App {
 	alertService := service.NewAlertService(geckoRepository, alertRepository, botApi)
 	go func() {
 		for {
-			alertService.AlertByCurrency()
-			time.Sleep(10 * time.Second)
+			alertService.AlertByCoinName()
+			time.Sleep(30 * time.Second)
 		}
 	}()
 

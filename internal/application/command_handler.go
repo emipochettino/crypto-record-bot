@@ -15,7 +15,7 @@ func NewCommandHandler(commands ...service.Command) *CommandHandler {
 	}
 }
 
-/*TODO: in order avoid mixin cqrs with ddd maybe commands can be strategies in application layer.
+/*TODO: in order avoid mixing cqrs with ddd maybe commands can be strategies in application layer.
 With that it is possible to use real domain services*/
 
 func (c CommandHandler) Handle(message telegram.Message) {

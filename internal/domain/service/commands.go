@@ -34,6 +34,7 @@ func (c *PriceCommand) Execute(message telegram.Message) {
 		c.botClient.Send(telegram.NewMessage(message.Chat.ID, err.Error()))
 		return
 	}
+	//TODO: extract this common functionality
 	price := strconv.FormatFloat(float64(simpleSinglePrice.MarketPrice), 'f', -1, 32)
 	c.botClient.Send(telegram.NewMessage(message.Chat.ID, fmt.Sprintf("%s: %s %s", coinName, simpleSinglePrice.Currency, price)))
 }
@@ -58,10 +59,10 @@ func (c *CreateAlertCommand) ShouldExecute(message telegram.Message) bool {
 func (c *CreateAlertCommand) Execute(message telegram.Message) {
 	arguments := strings.Split(message.CommandArguments(), " ")
 	if message.CommandArguments() == "" || len(arguments) != 3 {
-		c.botClient.Send(telegram.NewMessage(message.Chat.ID, "you need to indicate currency, diamond symbol and price. \n\nExample:\nbitcoin < 30000"))
+		c.botClient.Send(telegram.NewMessage(message.Chat.ID, "you need to indicate coin name, diamond symbol and price. \n\nExample:\nbitcoin < 30000"))
 		return
 	}
-	currency := arguments[0]
+	coinName := arguments[0]
 	diamondSymbol := arguments[1]
 	priceString := arguments[2]
 
@@ -76,26 +77,26 @@ func (c *CreateAlertCommand) Execute(message telegram.Message) {
 		c.botClient.Send(telegram.NewMessage(message.Chat.ID, fmt.Sprintf("Arugment (%s) is wrong, expecting float value.\nExample 20.9113123", priceString)))
 		return
 	}
-	coinList, err := c.cryptoRepository.GetCoinList()
+	coins, err := c.cryptoRepository.GetCoinList()
 	if err != nil {
 		c.botClient.Send(telegram.NewMessage(message.Chat.ID, err.Error()))
 		return
 	}
 	var isValidCoin bool
-	for _, coin := range *coinList {
-		if isValidCoin = strings.ToLower(coin.ID) == strings.ToLower(currency); isValidCoin {
+	for _, coin := range *coins {
+		if isValidCoin = strings.ToLower(coin.ID) == strings.ToLower(coinName); isValidCoin {
 			break
 		}
 	}
 	if !isValidCoin {
-		c.botClient.Send(telegram.NewMessage(message.Chat.ID, fmt.Sprintf("Currency %s is not valid", currency)))
+		c.botClient.Send(telegram.NewMessage(message.Chat.ID, fmt.Sprintf("CoinName %s is not valid", coinName)))
 		return
 	}
 
 	alert := model.MakeAlert(
 		message.Chat.ID,
 		message.From.ID,
-		currency,
+		coinName,
 		isGreaterThan,
 		price,
 	)
@@ -127,16 +128,16 @@ func (c *DeleteAlertCommand) ShouldExecute(message telegram.Message) bool {
 }
 
 func (c *DeleteAlertCommand) Execute(message telegram.Message) {
-	currency := message.CommandArguments()
-	if currency == "" {
-		c.botClient.Send(telegram.NewMessage(message.Chat.ID, "you need to indicate currency.\nExample: bitcoin"))
+	coinName := message.CommandArguments()
+	if coinName == "" {
+		c.botClient.Send(telegram.NewMessage(message.Chat.ID, "you need to indicate coinName.\nExample: bitcoin"))
 		return
 	}
 
 	alert := model.MakeAlert(
 		message.Chat.ID,
 		message.From.ID,
-		currency,
+		coinName,
 		false,
 		0,
 	)
@@ -151,7 +152,7 @@ func (c *DeleteAlertCommand) Execute(message telegram.Message) {
 		c.botClient.Send(telegram.NewMessage(message.Chat.ID, "Done!"))
 		return
 	} else {
-		c.botClient.Send(telegram.NewMessage(message.Chat.ID, fmt.Sprintf("Alert with currency (%s) not found!", currency)))
+		c.botClient.Send(telegram.NewMessage(message.Chat.ID, fmt.Sprintf("Alert with coinName (%s) not found!", coinName)))
 		return
 	}
 }
