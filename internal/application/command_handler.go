@@ -1,15 +1,15 @@
 package application
 
 import (
-	"CryptoRecordBot/internal/domain"
+	"CryptoRecordBot/internal/domain/service"
 	telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 type CommandHandler struct {
-	commands []domain.Command
+	commands []service.Command
 }
 
-func NewCommandHandler(commands ...domain.Command) *CommandHandler {
+func NewCommandHandler(commands ...service.Command) *CommandHandler {
 	return &CommandHandler{
 		commands: commands,
 	}
