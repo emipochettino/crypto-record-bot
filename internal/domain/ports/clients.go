@@ -1,4 +1,4 @@
-package domain
+package ports
 
 import telegram "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 
