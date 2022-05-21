@@ -11,8 +11,9 @@ type CryptoRepository interface {
 }
 
 type AlertRepository interface {
-	FindByID(chatID int64, userID int64, currency string, isGreaterThan bool) *model.Alert
 	FindByChatIDAndUserID(chatID int64, userID int64) ([]model.Alert, error)
 	Create(alert model.Alert) error
-	Delete(alert model.Alert) error
+	Delete(alert model.Alert) (bool, error)
+	FindCurrencies() ([]string, error)
+	FindByCurrency(currency string) ([]model.Alert, error)
 }

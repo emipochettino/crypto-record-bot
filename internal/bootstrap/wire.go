@@ -34,12 +34,22 @@ func NewApp() *App {
 	alertRepository := persistance.NewAlertRepository(db)
 	commandHandler := application.NewCommandHandler(
 		service.NewPriceCommand(geckoRepository, botApi),
-		service.NewAlertCommand(geckoRepository, botApi, alertRepository),
+		service.NewCreateAlertCommand(geckoRepository, botApi, alertRepository),
+		service.NewDeleteAlertCommand(botApi, alertRepository),
+		service.NewListAlertsCommand(botApi, alertRepository),
 	)
 	bot, err := infrastructure.NewBot(botApi, commandHandler)
 	if err != nil {
 		panic(err)
 	}
+
+	alertService := service.NewAlertService(geckoRepository, alertRepository, botApi)
+	go func() {
+		for {
+			alertService.AlertByCurrency()
+			time.Sleep(10 * time.Second)
+		}
+	}()
 
 	return &App{
 		Bot: bot,
