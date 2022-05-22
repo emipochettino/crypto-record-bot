@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -31,7 +32,7 @@ func MakeAlert(chatId int64, userId int64, coinName string, isGreaterThan bool, 
 	return Alert{
 		chatId,
 		userId,
-		coinName,
+		strings.ToLower(coinName),
 		isGreaterThan,
 		price,
 		time.Now(),
