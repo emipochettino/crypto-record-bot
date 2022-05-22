@@ -31,7 +31,7 @@ func (s *AlertService) AlertByCoinName() {
 	for _, coinName := range coinNames {
 		price, err := s.cryptoRepository.GetPrice(coinName, "usd")
 		if err != nil {
-			log.Printf("Something went wrong trying to find the price of %f\n", price.MarketPrice)
+			log.Printf("Something went wrong trying to find the price of %s. Error: %s\n", coinName, err.Error())
 			return
 		}
 
