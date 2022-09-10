@@ -8,6 +8,7 @@ import (
 type CryptoRepository interface {
 	GetPrice(coinName string, currency string) (*types.SimpleSinglePrice, error)
 	GetCoinList() (*types.CoinList, error)
+	GetPriceWith24hsChange(coinName string) (*model.SimplePrice, error)
 }
 
 type AlertRepository interface {

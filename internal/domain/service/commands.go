@@ -28,15 +28,15 @@ func (c *PriceCommand) Execute(message telegram.Message) {
 	if message.CommandArguments() != "" {
 		coinName = message.CommandArguments()
 	}
-	simpleSinglePrice, err := c.cryptoRepository.GetPrice(coinName, "usd")
+	simplePrice, err := c.cryptoRepository.GetPriceWith24hsChange(coinName)
 
 	if err != nil {
 		c.botClient.Send(telegram.NewMessage(message.Chat.ID, err.Error()))
 		return
 	}
-	//TODO: extract this common functionality
-	price := strconv.FormatFloat(float64(simpleSinglePrice.MarketPrice), 'f', -1, 32)
-	c.botClient.Send(telegram.NewMessage(message.Chat.ID, fmt.Sprintf("%s: %s %s", coinName, simpleSinglePrice.Currency, price)))
+	// TODO: extract this common functionality
+	price := strconv.FormatFloat(float64(simplePrice.Usd), 'f', -1, 32)
+	c.botClient.Send(telegram.NewMessage(message.Chat.ID, fmt.Sprintf("%s: usd %s (%s %.2f)", coinName, price, simplePrice.GetChangeSymbol(), simplePrice.Usd24HChange)))
 }
 
 func NewPriceCommand(cryptoRepository ports.CryptoRepository, botClient ports.BotClient) *PriceCommand {

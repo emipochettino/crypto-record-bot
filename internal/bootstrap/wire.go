@@ -11,6 +11,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -23,6 +24,15 @@ type App struct {
 }
 
 func NewApp() *App {
+	whiteListString := os.Getenv("WHITE_LIST")
+	var whiteList []int64
+	if strings.TrimSpace(whiteListString) != "" {
+		whiteListStrSlice := strings.Split(whiteListString, ",")
+		whiteList = make([]int64, len(whiteListStrSlice))
+		for i, s := range whiteListStrSlice {
+			whiteList[i], _ = strconv.ParseInt(s, 10, 64)
+		}
+	}
 	geckoClient := NewGeckoClient()
 	geckoRepository := client.NewGeckoRepository(geckoClient)
 	token := os.Getenv("TELEGRAM_TOKEN")
@@ -38,7 +48,7 @@ func NewApp() *App {
 		service.NewDeleteAlertCommand(botApi, alertRepository),
 		service.NewListAlertsCommand(botApi, alertRepository),
 	)
-	bot, err := infrastructure.NewBot(botApi, commandHandler)
+	bot, err := infrastructure.NewBot(botApi, commandHandler, whiteList)
 	if err != nil {
 		panic(err)
 	}
