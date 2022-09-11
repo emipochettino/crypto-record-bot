@@ -7,7 +7,9 @@ type PriceWithChange struct {
 
 func (p PriceWithChange) GetChangeSymbol() string {
 	symbol := ""
-	if p.Usd24HChange > 0 {
+	if p.Usd24HChange >= 15 {
+		symbol = "🚀"
+	} else if p.Usd24HChange > 0 {
 		symbol = "😎"
 	} else if p.Usd24HChange < 0 {
 		symbol = "😓"
